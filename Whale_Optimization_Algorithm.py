@@ -3,8 +3,17 @@ import random
 
 global pos, func, l_b, u_b, dimensions
 
-def checkpos(pos, l_b, u_b):
-    return np.clip(pos, l_b, u_b)
+def checkpos(pos, l_b, u_b, dimensions):
+    if len(l_b) == 1:
+        l_b = [l_b[0]] * dimensions
+        u_b = [u_b[0]] * dimensions
+    
+    for i in range(dimensions):
+        if pos[i] < l_b[i]:
+            pos[i] = l_b[i]
+        elif pos[i] > u_b[i]:
+            pos[i] = u_b[i]
+    return pos
 
 def dist(vec1, vec2):
     return np.linalg.norm(np.array(vec1) - np.array(vec2))
@@ -40,7 +49,7 @@ def run_woa(pos, func, l_b, u_b, dimensions, iterations, whale):
                 D = dist(best_pos, pos[i])
                 temp = D * np.exp(b * l) * np.cos(2 * np.pi * l) + best_pos
 
-            temp = checkpos(temp, l_b, u_b)
+            temp = checkpos(temp, l_b, u_b, dimensions)
             temp_fit = func(temp, dimensions)
             
             if temp_fit < fx_lst[i]:
